@@ -1,5 +1,5 @@
 {
 	"python.useEnvironmentsExtension": true,
 	"python-envs.pythonProjects": [],
-	"cSpell.words": ["csvfile"]
+	"cSpell.words": ["actuals", "barplot", "categoricals", "Corsa", "csvfile", "figsize", "importances", "scatterplot", "vauxhall", "xlabel", "ylabel", "yticks"]
 }
