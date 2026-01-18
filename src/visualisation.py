@@ -19,17 +19,19 @@ def plot_actual_vs_predicted(actuals, predictions, model_name, R_SQUARE):
     plt.legend()
     plt.show()
 
-def plot_feature_importances(model, feature_names, title):
-    plt.figure(figsize=(10, 6))
-    importances = pd.DataFrame({
-        "features": feature_names,
-        "importance": model.feature_importances_
-    }).sort_values("importance", ascending=True)
+def plot_feature_importances(values, feature_names, title):
+    importance_df = (
+        pd.DataFrame({
+            "feature": feature_names,
+            "importance": values
+        })
+        .sort_values("importance", ascending=False)
+        .head(20)
+    )
 
-    plt.barh(y=range(len(importances)), width=importances["importance"], color="teal")
-    plt.grid(True, alpha=0.3)
-    plt.yticks(range(len(importances)), importances["features"])
-    plt.xlabel("Importance")
+    plt.figure(figsize=(10, 6))
+    plt.barh(importance_df["feature"], importance_df["importance"])
+    plt.gca().invert_yaxis()
     plt.title(title)
     plt.tight_layout()
     plt.show()
