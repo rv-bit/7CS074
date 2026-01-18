@@ -41,17 +41,20 @@ def get_clustering_candidate_models(clusters=3, random_state=42):
         'k-means': KMeans(n_clusters=clusters, random_state=random_state)
     }
 
-def get_type_models(type_models):
+def get_type_models(type_models, **kwargs):
     """
-        Returns a the candidate models base on the argument passed, if not found raise error
+    Returns the candidate models based on the argument passed, if not found raise error
     """
     match type_models:
         case 'regression':
-            return get_regression_candidate_models()
+            return get_regression_candidate_models(kwargs.get('random_state', 42))
         case 'classification':
-            return get_classification_candidate_models()
+            return get_classification_candidate_models(kwargs.get('random_state', 42))
         case 'clustering':
-            return get_clustering_candidate_models(),
+            return get_clustering_candidate_models(
+                kwargs.get('clusters', 4), 
+                kwargs.get('random_state', 42)
+            )
 
         case _:
             raise ValueError("Type model isn't found in the list")
