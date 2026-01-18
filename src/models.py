@@ -74,17 +74,14 @@ def automatic_make_model_selection(
     all_models = {}
     trained_models_per_make = {}
 
-    # Global model
-    # Gets trained on all data, all columns, very good for averaging the whole dataset no matter the model / make of vehicle
-    features.fit_feature_encoder(
+    X_global, global_encoder = features.engineer_features(
         df,
-        categorical_cols=global_vars.CATEGORICAL_FEATURES_GLOBAL
+        global_vars.CATEGORICAL_FEATURES_GLOBAL
     )
-    X_global = features.engineer_features(df)
-    y_global = df[target_col]
+    Y_global = df[target_col]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X_global, y_global, test_size=0.2, random_state=42
+        X_global, Y_global, test_size=0.2, random_state=42
     )
 
     best_name, best_model, cv_scores = evaluation.select_best_model_cv(
@@ -107,12 +104,11 @@ def automatic_make_model_selection(
     for make, group_df in df.groupby("make"):
         if len(group_df) < min_samples_per_make:
             continue
-
-        features.fit_feature_encoder(
-            group_df,
-            categorical_cols=global_vars.CATEGORICAL_FEATURES_PER_MAKE
+        
+        X, encoder = features.engineer_features(
+            group_df, 
+            global_vars.CATEGORICAL_FEATURES_PER_MAKE
         )
-        X = features.engineer_features(group_df)
         Y = group_df[target_col]
 
         X_train, X_test, y_train, y_test = train_test_split(
@@ -135,6 +131,8 @@ def automatic_make_model_selection(
 
         trained_models_per_make[make] = {
             "model": best_model,
+            "encoder": encoder,
+            "feature_names": X_train.columns,
             "X_test": X_test,
             "y_test": y_test,
             "predictions": predictions,
