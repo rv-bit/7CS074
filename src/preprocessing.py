@@ -4,61 +4,30 @@ import os
 import pandas as pd
 import numpy as np
 
-# We will globally define the data paths here, as they will be used in multiple functions / notebooks
-# Base Directory for the project should be /, i.e., the parent directory of src
-BASE_DIR = os.getcwd()
-
-DATA_RAW_PATH = os.path.join(BASE_DIR, "data/raw")
-DATA_CLEAN_PATH = os.path.join(BASE_DIR, "data/clean")
-
-DATASET_CLEAN_FILE_PATH = os.path.join(DATA_CLEAN_PATH, "cleaned_dataset.csv")
-
-COLUMNS = [
-    "make",
-    "model",
-    "year",
-    "price",
-    "transmission",
-    "mileage",
-    "fuelType",
-    "tax",
-    "mpg",
-    "engineSize",
-]
-
-NUMERIC_OUTLIER_COLUMNS = [
-    "price",
-    "mileage",
-    "mpg",
-    "engineSize",
-    "tax"
-]
-
-EXTRA_COLUMNS = ['mileage2', 'fuel type2', 'engine size2', 'reference']
-EXPECTED_COLUMNS = 9
+import global_vars 
 
 def process_raw_multiple_data_files():
-    if not os.path.exists(DATA_RAW_PATH):
+    if not os.path.exists(global_vars.DATA_RAW_PATH):
         raise FileNotFoundError("Data directory not found. Please ensure the project structure is correct.")
 
     # Creates if not exists
-    if not os.path.exists(DATA_CLEAN_PATH):
-        os.makedirs(DATA_CLEAN_PATH)
+    if not os.path.exists(global_vars.DATA_CLEAN_PATH):
+        os.makedirs(global_vars.DATA_CLEAN_PATH)
 
-    if os.path.exists(DATASET_CLEAN_FILE_PATH):
+    if os.path.exists(global_vars.DATASET_CLEAN_FILE_PATH):
         return  # If cleaned dataset already exists, skip processing
 
     # Creates if not exists, double check at this point
-    if not os.path.exists(DATASET_CLEAN_FILE_PATH):
-        os.makedirs(DATA_CLEAN_PATH, exist_ok=True)
+    if not os.path.exists(global_vars.DATASET_CLEAN_FILE_PATH):
+        os.makedirs(global_vars.DATA_CLEAN_PATH, exist_ok=True)
 
-    directory_raw_bytes = os.fsencode(DATA_RAW_PATH)
+    directory_raw_bytes = os.fsencode(global_vars.DATA_RAW_PATH)
 
     # Validate that CSV files to see if exists and is non-empty
     for file in os.listdir(directory_raw_bytes):
         filename = os.fsdecode(file)
         if filename.endswith(".csv"):
-            DATASET_PATH = os.path.join(DATA_RAW_PATH, filename)
+            DATASET_PATH = os.path.join(global_vars.DATA_RAW_PATH, filename)
             df = pd.read_csv(DATASET_PATH)
             if df.empty:
                 raise ValueError("Loaded dataset is empty. Please check the dataset file.")
@@ -69,15 +38,15 @@ def process_raw_multiple_data_files():
     # Concatenate all CSV files in the raw data directory
     # We will read the clean path / file directly, and add the default headers
     # We will use our COLUMNS variable as the schema
-    schema = COLUMNS
-    with open(DATASET_CLEAN_FILE_PATH, 'w') as csvfile:
+    schema = global_vars.COLUMNS
+    with open(global_vars.DATASET_CLEAN_FILE_PATH, 'w') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
         writer.writerow([g for g in schema])
 
     for file in os.listdir(directory_raw_bytes):
         filename = os.fsdecode(file)
         if filename.endswith(".csv"):
-            DATASET_PATH = os.path.join(DATA_RAW_PATH, filename)
+            DATASET_PATH = os.path.join(global_vars.DATA_RAW_PATH, filename)
             df_default = pd.read_csv(DATASET_PATH)
             df = clean_data(df_default)
 
@@ -86,10 +55,10 @@ def process_raw_multiple_data_files():
                 df.insert(0, 'make', make) # Insert 'make' as first column
                 
                 # Only keep rows with exactly EXPECTED_COLUMNS + 1 columns after inserting 'make'
-                df = df[df.apply(lambda x: len(x) == EXPECTED_COLUMNS + 1, axis=1)]
+                df = df[df.apply(lambda x: len(x) == global_vars.EXPECTED_COLUMNS + 1, axis=1)]
 
                 df.to_csv(
-                    DATASET_CLEAN_FILE_PATH,
+                    global_vars.DATASET_CLEAN_FILE_PATH,
                     mode='a',
                     header=False,
                     index=False
@@ -173,11 +142,11 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     
     # Remove extra columns and duplicate columns if present
-    df.drop(columns=[col for col in EXTRA_COLUMNS if col in df.columns], inplace=True, errors='ignore')
+    df.drop(columns=[col for col in global_vars.EXTRA_COLUMNS if col in df.columns], inplace=True, errors='ignore')
     df = df.loc[:, ~df.columns.duplicated()]
     
     # Only keep rows with exactly EXPECTED_COLUMNS columns
-    df = df[df.apply(lambda x: len(x) == EXPECTED_COLUMNS, axis=1)]
+    df = df[df.apply(lambda x: len(x) == global_vars.EXPECTED_COLUMNS, axis=1)]
     
     # Replace 'N/A' and Drop record duplicates
     # If by any chance 'N/A' is a string by text, we shall change it to nan 'na', later we will remove anyway
@@ -192,13 +161,13 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df.dropna(how='all', inplace=True)
 
     # Coerce numeric columns
-    df = coerce_numeric_columns(df, NUMERIC_OUTLIER_COLUMNS)
+    df = coerce_numeric_columns(df, global_vars.NUMERIC_OUTLIER_COLUMNS)
     # Domain filtering
     df = apply_domain_constraints(df)
     # Statistical outliers
     df = remove_iqr_outliers(
         df,
-        columns=[c for c in NUMERIC_OUTLIER_COLUMNS if c in df.columns]
+        columns=[c for c in global_vars.NUMERIC_OUTLIER_COLUMNS if c in df.columns]
     )
     
     return df

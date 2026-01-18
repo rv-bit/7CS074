@@ -3,7 +3,7 @@ import numpy as np
 
 from sklearn.preprocessing import OneHotEncoder
 
-from global_vars import *
+import global_vars
 
 _ENCODER = None
 _CATEGORICAL_COLS = None
@@ -48,7 +48,7 @@ def engineer_features(
         df['efficiency_score'].replace([np.inf, -np.inf], np.nan, inplace=True)
 
     # Numeric
-    X_numeric = df[NUMERIC_FEATURES].reset_index(drop=True)
+    X_numeric = df[global_vars.NUMERIC_FEATURES].reset_index(drop=True)
 
     # Categorical
     X_categorical = _ENCODER.transform(df[_CATEGORICAL_COLS])
@@ -85,6 +85,6 @@ def get_feature_names():
     if _ENCODER is None:
         raise RuntimeError("Encoder not fitted")
 
-    return list(NUMERIC_FEATURES) + list(
+    return list(global_vars.NUMERIC_FEATURES) + list(
         _ENCODER.get_feature_names_out(_CATEGORICAL_COLS)
     )
