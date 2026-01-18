@@ -1,5 +1,5 @@
 {
 	"python.useEnvironmentsExtension": true,
 	"python-envs.pythonProjects": [],
-	"cSpell.words": ["actuals", "barplot", "categoricals", "Corsa", "csvfile", "figsize", "importances", "scatterplot", "vauxhall", "xlabel", "ylabel", "yticks"]
+	"cSpell.words": ["actuals", "annot", "apriori", "axhline", "barplot", "categoricals", "cbar", "cmap", "colnames", "colorbar", "consequents", "Corsa", "csvfile", "darkorange", "edgecolor", "edgecolors", "figsize", "fontsize", "fontweight", "importances", "itemsets", "linestyle", "mlxtend", "pairplot", "scatterplot", "steelblue", "suptitle", "vauxhall", "viridis", "whitegrid", "xlabel", "xlim", "xticklabels", "xticks", "ylabel", "ylim", "yticklabels", "yticks"]
 }
