@@ -46,7 +46,9 @@ CATEGORICAL_FEATURES_PER_MAKE = [
 NUMERIC_FEATURES = [
     'year', 
     'tax', 
-    'mileage', 
+    'mileage',
+    'engineSize',
+    'mpg',
     
     # We are making this based on the (mpg/engine size)
     'efficiency_score'
