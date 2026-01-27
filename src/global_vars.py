@@ -54,5 +54,23 @@ NUMERIC_FEATURES = [
     'efficiency_score'
 ]
 
+CLUSTERING_FEATURES = [
+    'price', 
+    'mileage', 
+    'mpg', 
+    'engineSize', 
+    'year'
+]
+
+ASSOCIATION_RULES = [
+    'make', 
+    'fuelType',
+    'transmission',
+    'price',
+    'mileage',
+    'engineSize',
+    'mpg'
+]
+
 EXTRA_COLUMNS = ['mileage2', 'fuel type2', 'engine size2', 'reference']
 EXPECTED_COLUMNS = 9
