@@ -51,7 +51,9 @@ NUMERIC_FEATURES = [
     'mpg',
     
     # We are making this based on the (mpg/engine size)
-    'efficiency_score'
+    'efficiency_score',
+    # We are making this base on (current_year - year)
+    'vehicle_age'
 ]
 
 CLUSTERING_FEATURES = [

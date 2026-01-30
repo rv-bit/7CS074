@@ -1,3 +1,4 @@
+from datetime import datetime
 import pandas as pd
 import numpy as np
 
@@ -22,6 +23,14 @@ def engineer_features(
             df['engineSize'] > 0,
             df['mpg'] / df['engineSize'],
             np.nan
+        )
+        
+    if {'year'}.issubset(df.columns):
+        current_year = datetime.now().year
+        df['vehicle_age'] = np.where(
+            df['year'] > 0,
+            current_year - df['year'],
+            np.nan 
         )
 
     encoder = OneHotEncoder(
