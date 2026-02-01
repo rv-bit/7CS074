@@ -8,7 +8,8 @@ import global_vars
 
 def engineer_features(
     df: pd.DataFrame,
-    low_card_categorical_features
+    low_card_categorical_features,
+    high_card_categorical_features,
 ):
     """
         Returns a joint dataframe and the encoder of both numerical values and categorical after one hot encoding values like can be see in src/global_vars/ - CATEGORICAL_FEATURES_GLOBAL, CATEGORICAL_FEATURES_PER_MAKE.
@@ -40,8 +41,6 @@ def engineer_features(
         sparse_output=False
     )
     encoder.fit(df[low_card_categorical_features])
-
-    # Build features manually (no globals)
     X_numeric = df[global_vars.NUMERIC_FEATURES].reset_index(drop=True)
 
     X_categorical = encoder.transform(df[low_card_categorical_features])
@@ -55,7 +54,7 @@ def engineer_features(
     )
 
     # Returns a joint dataframe of both numeric X-Axis and categorical X-Axis
-    return X_Concatenated, encoder
+    return X_Concatenated
 
 def get_feature_effects(model):
     """
