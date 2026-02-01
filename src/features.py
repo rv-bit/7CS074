@@ -8,7 +8,7 @@ import global_vars
 
 def engineer_features(
     df: pd.DataFrame,
-    categorical_features
+    low_card_categorical_features
 ):
     """
         Returns a joint dataframe and the encoder of both numerical values and categorical after one hot encoding values like can be see in src/global_vars/ - CATEGORICAL_FEATURES_GLOBAL, CATEGORICAL_FEATURES_PER_MAKE.
@@ -24,7 +24,8 @@ def engineer_features(
             df['mpg'] / df['engineSize'],
             np.nan
         )
-        
+    
+    # We will create vehicle_age as the primary column to create a better relationship between price and age of vehicle
     if {'year'}.issubset(df.columns):
         current_year = datetime.now().year
         df['vehicle_age'] = np.where(
@@ -38,14 +39,14 @@ def engineer_features(
         handle_unknown="ignore",
         sparse_output=False
     )
-    encoder.fit(df[categorical_features])
+    encoder.fit(df[low_card_categorical_features])
 
     # Build features manually (no globals)
     X_numeric = df[global_vars.NUMERIC_FEATURES].reset_index(drop=True)
 
-    X_categorical = encoder.transform(df[categorical_features])
+    X_categorical = encoder.transform(df[low_card_categorical_features])
     categorical_cols = encoder.get_feature_names_out(
-        categorical_features
+        low_card_categorical_features
     )
     
     X_Concatenated = pd.concat(
