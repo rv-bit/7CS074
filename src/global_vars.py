@@ -30,18 +30,17 @@ NUMERIC_OUTLIER_COLUMNS = [
     "tax"
 ]
 
-LOW_CATEGORICAL_FEATURES_GLOBAL = [
-    'make',
+LOW_CATEGORICAL_FEATURES_OVERALL = [
     'transmission',
     'fuelType'
 ]
 
-LOW_CATEGORICAL_FEATURES_PER_MAKE = [
-    'transmission',
-    'fuelType'
+HIGH_CATEGORICAL_FEATURES_GLOBAL = [
+    'make'
+    'model'
 ]
 
-HIGH_CATEGORICAL_FEATURES_OVERALL = [
+HIGH_CATEGORICAL_FEATURES_PER_MAKE = [
     'model'
 ]
 
