@@ -3,17 +3,20 @@ import pandas as pd
 import numpy as np
 
 from sklearn.preprocessing import OneHotEncoder
+from category_encoders import TargetEncoder
 
 import global_vars
 
 def engineer_features(
     df: pd.DataFrame,
+    y: pd.Series,
     low_card_categorical_features,
     high_card_categorical_features,
 ):
     """
-        Returns a joint dataframe and the encoder of both numerical values and categorical after one hot encoding values like can be see in src/global_vars/ - CATEGORICAL_FEATURES_GLOBAL, CATEGORICAL_FEATURES_PER_MAKE.
-        Creates efficiency score to remove the stress on training on two features, now can be done with one, also better for later clustering like 'Efficient', 'Performance' etc.
+        Returns a joint dataframe and the encoder of both numerical values and categorical after one hot encoding and target encoding values like can be see in src/global_vars/ - HIGH_CARD_CATEGORICAL_FEATURES, LOW_CARD_CATEGORICAL_FEATURES.
+        Creates efficiency score to remove the stress on training on two features (mpg and engine size) to determine price, instead just create efficiency score to let model decide on that.
+        Creates vehicle age to better determine the age of vehicle instead of year of manufacture.
     """
     df = df.copy()
     
@@ -35,31 +38,58 @@ def engineer_features(
             np.nan 
         )
 
-    encoder = OneHotEncoder(
+    X_numeric = df[global_vars.NUMERIC_FEATURES]
+
+    low_card_encoder = OneHotEncoder(
         drop="first",
         handle_unknown="ignore",
         sparse_output=False
     )
-    encoder.fit(df[low_card_categorical_features])
-    X_numeric = df[global_vars.NUMERIC_FEATURES].reset_index(drop=True)
-
-    X_categorical = encoder.transform(df[low_card_categorical_features])
-    categorical_cols = encoder.get_feature_names_out(
+    low_card_encoder.fit(df[low_card_categorical_features])
+    X_train_low_card = low_card_encoder.transform(df[low_card_categorical_features])
+    low_categorical_cols = low_card_encoder.get_feature_names_out(
         low_card_categorical_features
+    )
+    X_low_df = pd.DataFrame(
+        X_train_low_card,
+        columns=low_categorical_cols,
+        index=df.index
+    )
+    
+    
+    high_card_encoder = TargetEncoder(
+        cols=high_card_categorical_features,
+        smoothing=10
+    )
+    X_train_high_card = high_card_encoder.fit_transform(df[high_card_categorical_features], y)
+    high_categorical_cols = high_card_encoder.get_feature_names_out(
+        high_card_categorical_features
+    )
+    X_high_df = pd.DataFrame(
+        X_train_high_card,
+        columns=high_categorical_cols,
+        index=df.index
     )
     
     X_Concatenated = pd.concat(
-        [X_numeric, pd.DataFrame(X_categorical, columns=categorical_cols)],
+        [
+            X_numeric, 
+            X_low_df,
+            X_high_df
+        ],
         axis=1
     )
+    
+    X_Concatenated.drop(['year', 'mpg', 'engineSize'], axis=1, inplace=True)
 
     # Returns a joint dataframe of both numeric X-Axis and categorical X-Axis
     return X_Concatenated
 
 def get_feature_effects(model):
     """
-        Returns (values, kind) for feature effect visualization.
-        - Tree models -> feature_importances_
+        Returns (values, kind) for feature effect visualization. Since we are using different models, we need to extract feature importance or coefficients based on model type.
+        Supported models:
+        - Tree models -> feature_importances_ - https://scikit-learn.org/stable/auto_examples/ensemble/plot_forest_importances.html
         - Linear models -> abs(coef_)
     """
     # RandomForest, GradientBoosting, etc.
