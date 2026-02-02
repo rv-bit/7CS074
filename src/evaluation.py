@@ -1,3 +1,4 @@
+import pandas as pd
 from sklearn.base import clone
 from sklearn.metrics import (
     classification_report,
@@ -55,6 +56,62 @@ def calculate_silhouette_score(X, labels):
         return silhouette_score(X[mask], labels[mask])
     except:
         return None
+    
+def interpret_rules(rules_df: pd.DataFrame, top_n: int = 10) -> None:
+    """
+    Print human-readable interpretation of top association rules.
+    
+    Args:
+        rules_df: DataFrame with association rules
+        top_n: Number of top rules to display
+    """
+    if rules_df.empty:
+        print("No rules to interpret")
+        return
+    
+    print(f"\n{'='*80}")
+    print(f"TOP {top_n} ASSOCIATION RULES")
+    print(f"{'='*80}\n")
+    
+    for idx, row in rules_df.head(top_n).iterrows():
+        antecedents = ', '.join([item.replace(':', ' = ') for item in row['antecedents']])
+        consequents = ', '.join([item.replace(':', ' = ') for item in row['consequents']])
+        
+        print(f"Rule {idx + 1}:")
+        print(f"  IF {antecedents}")
+        print(f"  THEN {consequents}")
+        print(f"  Support: {row['support']:.3f} | Confidence: {row['confidence']:.3f} | Lift: {row['lift']:.3f}")
+        print(f"  → This means: {row['confidence']*100:.1f}% of cars with {antecedents}")
+        print(f"    also have {consequents}")
+        print(f"    (This is {row['lift']:.2f}x more likely than random)\n")
+
+def get_rules_summary(rules_df: pd.DataFrame) -> dict:
+    """
+    Get summary statistics of association rules.
+    
+    Args:
+        rules_df: DataFrame with association rules
+    
+    Returns:
+        Dictionary with summary statistics
+    """
+    if rules_df.empty:
+        return {
+            'total_rules': 0,
+            'avg_support': 0,
+            'avg_confidence': 0,
+            'avg_lift': 0
+        }
+    
+    return {
+        'total_rules': len(rules_df),
+        'avg_support': rules_df['support'].mean(),
+        'avg_confidence': rules_df['confidence'].mean(),
+        'avg_lift': rules_df['lift'].mean(),
+        'max_lift': rules_df['lift'].max(),
+        'min_support': rules_df['support'].min(),
+        'max_support': rules_df['support'].max()
+    }
 
 def select_best_model_cv(
     X,
