@@ -19,6 +19,16 @@ def plot_price_vs_mpg(df: pd.DataFrame):
     plt.ylabel("Price (£)", fontsize=12)
     plt.tight_layout()
     plt.show()
+    
+def plot_price_vs_milage(df: pd.DataFrame):
+    """Scatter plot of price vs milage"""
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(data=df, x='milage', y='price', alpha=0.5)
+    plt.title("Price vs Milage", fontsize=16, fontweight='bold')
+    plt.xlabel("Milage", fontsize=12)
+    plt.ylabel("Price (£)", fontsize=12)
+    plt.tight_layout()
+    plt.show()
 
 def plot_actual_vs_predicted(actuals, predictions, model_name, R_SQUARE):
     """Scatter plot of actual vs predicted values for regression"""
