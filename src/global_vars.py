@@ -36,7 +36,7 @@ LOW_CATEGORICAL_FEATURES_OVERALL = [
 ]
 
 HIGH_CATEGORICAL_FEATURES_GLOBAL = [
-    'make'
+    'make',
     'model'
 ]
 
