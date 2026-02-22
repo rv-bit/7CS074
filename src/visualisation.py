@@ -111,24 +111,7 @@ def plot_classification_metrics(metrics_dict, title="Classification Metrics"):
     plt.grid(True, alpha=0.3, axis='y')
     plt.tight_layout()
     plt.show()
-
-def plot_roc_curve(fpr, tpr, auc_score, title="ROC Curve"):
-    """Plot ROC curve for binary classification"""
-    plt.figure(figsize=(10, 8))
-    plt.plot(fpr, tpr, color='darkorange', lw=2, 
-             label=f'ROC curve (AUC = {auc_score:.2f})')
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', 
-             label='Random Classifier')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate', fontsize=12)
-    plt.ylabel('True Positive Rate', fontsize=12)
-    plt.title(title, fontsize=16, fontweight='bold')
-    plt.legend(loc="lower right", fontsize=11)
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.show()
-
+    
 # Clustering
 
 def plot_clusters(df: pd.DataFrame, cluster_col: str = 'cluster_label',  x_col: str = 'mpg', y_col: str = 'price',  title: str = "Car Clusters"):
